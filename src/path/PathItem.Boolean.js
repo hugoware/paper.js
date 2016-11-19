@@ -54,7 +54,7 @@ PathItem.inject(new function() {
         var res = path.clone(false).reduce({ simplify: true })
                 .transform(null, true, true);
         return resolve
-            ? res.resolveCrossings().reorient(res.getFillRule() === 'nonzero')
+            ? res.resolveCrossings().reorient(res.fillRule === 'nonzero')
             : res;
     }
 

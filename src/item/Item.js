@@ -20,7 +20,7 @@
  * is unique to their type, but share the underlying properties and functions
  * that they inherit from Item.
  */
-var Item = Base.extend(Emitter, /** @lends Item# */{
+var Item = Base.extend(/** @lends Item# */{
     statics: /** @lends Item */{
         /**
          * Override Item.extend() to merge the subclass' _serializeFields with
@@ -138,29 +138,29 @@ new function() { // Injection scope for various item event handlers
         // used paths with no ids.
         var hasProps = props && Base.isPlainObject(props),
             internal = hasProps && props.internal === true,
-            matrix = this._matrix = new Matrix(),
+            matrix = this._matrix = new Matrix();
             // Allow setting another project than the currently active one.
-            project = hasProps && props.project || paper.project,
-            settings = paper.settings;
-        this._id = internal ? null : UID.get();
+            // project = hasProps && props.project || paper.project,
+            // settings = paper.settings;
+        // this._id = internal ? null : UID.get();
         this._parent = this._index = null;
         // Inherit the applyMatrix setting from settings.applyMatrix
-        this._applyMatrix = this._canApplyMatrix && settings.applyMatrix;
+        // this._applyMatrix = this._canApplyMatrix && settings.applyMatrix;
         // Handle matrix before everything else, to avoid issues with
         // #addChild() calling _changed() and accessing _matrix already.
         if (point)
             matrix.translate(point);
         matrix._owner = this;
-        this._style = new Style(project._currentStyle, this, project);
+        // this._style = new Style(project._currentStyle, this, project);
         // Do not add to the project if it's an internal path,  or if
         // props.insert  or settings.isnertItems is false.
-        if (internal || hasProps && props.insert === false
-            || !settings.insertItems && !(hasProps && props.insert === true)) {
-            this._setProject(project);
-        } else {
-            (hasProps && props.parent || project)
-                    ._insertItem(undefined, this, true); // _created = true
-        }
+        // if (internal || hasProps && props.insert === false
+        //     // || !settings.insertItems && !(hasProps && props.insert === true)) {
+        //     // this._setProject(project);
+        // } else {
+        //     (hasProps && props.parent || project)
+        //             ._insertItem(undefined, this, true); // _created = true
+        // }
         // Filter out Item.NO_INSERT before _set(), for performance reasons.
         if (hasProps && props !== Item.NO_INSERT) {
             this.set(props, {
@@ -400,7 +400,7 @@ new function() { // Injection scope for various item event handlers
     setStyle: function(style) {
         // Don't access _style directly so Path#getStyle() can be overridden for
         // CompoundPaths.
-        this.getStyle().set(style);
+        // this.getStyle().set(style);
     }
 }, Base.each(['locked', 'visible', 'blendMode', 'opacity', 'guide'],
     // Produce getter/setters for properties. We need setters because we want to
@@ -1193,28 +1193,28 @@ new function() { // Injection scope for various item event handlers
      * @type Project
      * @bean
      */
-    getProject: function() {
-        return this._project;
-    },
+    // getProject: function() {
+    //     return this._project;
+    // },
 
-    _setProject: function(project, installEvents) {
-        if (this._project !== project) {
-            // Uninstall events before switching project, then install them
-            // again.
-            // NOTE: _installEvents handles all children too!
-            if (this._project)
-                this._installEvents(false);
-            this._project = project;
-            var children = this._children;
-            for (var i = 0, l = children && children.length; i < l; i++)
-                children[i]._setProject(project);
-            // We need to call _installEvents(true) again, but merge it with
-            // handling of installEvents argument below.
-            installEvents = true;
-        }
-        if (installEvents)
-            this._installEvents(true);
-    },
+    // _setProject: function(project, installEvents) {
+    //     if (this._project !== project) {
+    //         // Uninstall events before switching project, then install them
+    //         // again.
+    //         // NOTE: _installEvents handles all children too!
+    //         if (this._project)
+    //             this._installEvents(false);
+    //         this._project = project;
+    //         var children = this._children;
+    //         for (var i = 0, l = children && children.length; i < l; i++)
+    //             children[i]._setProject(project);
+    //         // We need to call _installEvents(true) again, but merge it with
+    //         // handling of installEvents argument below.
+    //         installEvents = true;
+    //     }
+    //     if (installEvents)
+    //         this._installEvents(true);
+    // },
 
     /**
      * The view that this item belongs to.
@@ -1613,33 +1613,33 @@ new function() { // Injection scope for various item event handlers
      */
     rasterize: function(resolution, insert) {
         // TODO: Switch to options object for more descriptive call signature.
-        var bounds = this.getStrokeBounds(),
-            scale = (resolution || this.getView().getResolution()) / 72,
-            // Floor top-left corner and ceil bottom-right corner, to never
-            // blur or cut pixels.
-            topLeft = bounds.getTopLeft().floor(),
-            bottomRight = bounds.getBottomRight().ceil(),
-            size = new Size(bottomRight.subtract(topLeft)),
-            raster = new Raster(Item.NO_INSERT);
-        if (!size.isZero()) {
-            var canvas = CanvasProvider.getCanvas(size.multiply(scale)),
-                ctx = canvas.getContext('2d'),
-                matrix = new Matrix().scale(scale).translate(topLeft.negate());
-            ctx.save();
-            matrix.applyToContext(ctx);
-            // See Project#draw() for an explanation of new Base()
-            this.draw(ctx, new Base({ matrices: [matrix] }));
-            ctx.restore();
-            // NOTE: We don't need to release the canvas since it belongs to the
-            // raster now!
-            raster.setCanvas(canvas);
-        }
-        raster.transform(new Matrix().translate(topLeft.add(size.divide(2)))
-                // Take resolution into account and scale back to original size.
-                .scale(1 / scale));
-        if (insert === undefined || insert)
-            raster.insertAbove(this);
-        return raster;
+        // var bounds = this.getStrokeBounds(),
+        //     scale = (resolution || this.getView().getResolution()) / 72,
+        //     // Floor top-left corner and ceil bottom-right corner, to never
+        //     // blur or cut pixels.
+        //     topLeft = bounds.getTopLeft().floor(),
+        //     bottomRight = bounds.getBottomRight().ceil(),
+        //     size = new Size(bottomRight.subtract(topLeft)),
+        //     raster = new Raster(Item.NO_INSERT);
+        // if (!size.isZero()) {
+        //     var canvas = CanvasProvider.getCanvas(size.multiply(scale)),
+        //         ctx = canvas.getContext('2d'),
+        //         matrix = new Matrix().scale(scale).translate(topLeft.negate());
+        //     ctx.save();
+        //     matrix.applyToContext(ctx);
+        //     // See Project#draw() for an explanation of new Base()
+        //     this.draw(ctx, new Base({ matrices: [matrix] }));
+        //     ctx.restore();
+        //     // NOTE: We don't need to release the canvas since it belongs to the
+        //     // raster now!
+        //     raster.setCanvas(canvas);
+        // }
+        // raster.transform(new Matrix().translate(topLeft.add(size.divide(2)))
+        //         // Take resolution into account and scale back to original size.
+        //         .scale(1 / scale));
+        // if (insert === undefined || insert)
+        //     raster.insertAbove(this);
+        // return raster;
     },
 
     /**
@@ -1767,11 +1767,11 @@ new function() { // Injection scope for hit-test functions shared with project
         return null;
     }
 
-    Project.inject({
-        hitTest: hitTest,
-        hitTestAll: hitTestAll,
-        _hitTest: hitTestChildren
-    });
+    // Project.inject({
+    //     hitTest: hitTest,
+    //     hitTestAll: hitTestAll,
+    //     _hitTest: hitTestChildren
+    // });
 
     return {
         // NOTE: Documentation is in the scope that follows.
@@ -2346,22 +2346,22 @@ new function() { // Injection scope for hit-test functions shared with project
                 }
             }
             Base.splice(children, items, index, 0);
-            var project = this._project,
-                // See #_remove() for an explanation of this:
-                notifySelf = project._changes;
-            for (var i = 0, l = items.length; i < l; i++) {
-                var item = items[i],
-                    name = item._name;
-                item._parent = this;
-                item._setProject(project, true);
-                // Set the name again to make sure all name lookup structures
-                // are kept in sync.
-                if (name)
-                    item.setName(name);
-                if (notifySelf)
-                    this._changed(/*#=*/Change.INSERTION);
-            }
-            this._changed(/*#=*/Change.CHILDREN);
+            // var project = this._project,
+            //     // See #_remove() for an explanation of this:
+            //     notifySelf = project._changes;
+            // for (var i = 0, l = items.length; i < l; i++) {
+            //     var item = items[i],
+            //         name = item._name;
+            //     item._parent = this;
+            //     item._setProject(project, true);
+            //     // Set the name again to make sure all name lookup structures
+            //     // are kept in sync.
+            //     if (name)
+            //         item.setName(name);
+            //     if (notifySelf)
+            //         this._changed(/*#=*/Change.INSERTION);
+            // }
+            // this._changed(/*#=*/Change.CHILDREN);
         } else {
             items = null;
         }

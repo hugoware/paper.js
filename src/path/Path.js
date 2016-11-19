@@ -317,7 +317,8 @@ var Path = PathItem.extend(/** @lends Path# */{
             curX = coords[0];
             curY = coords[1];
             if (first) {
-                parts.push('M' + f.pair(curX, curY));
+                // parts.push('M' + f.pair(curX, curY));
+                parts.push([ 1, curX, curY ]);
                 first = false;
             } else {
                 inX = coords[2];
@@ -326,18 +327,21 @@ var Path = PathItem.extend(/** @lends Path# */{
                         && outX === prevX && outY === prevY) {
                     // l = relative lineto:
                     if (!skipLine) {
-                        var dx = curX - prevX,
-                            dy = curY - prevY;
-                        parts.push(
-                              dx === 0 ? 'v' + f.number(dy)
-                            : dy === 0 ? 'h' + f.number(dx)
-                            : 'l' + f.pair(dx, dy));
+                      parts.push([ 2, curX, curY ]);
+                        // var dx = curX - prevX,
+                        //     dy = curY - prevY;
+                        // parts.push(
+                        //       dx === 0 ? 'v' + f.number(dy)
+                        //     : dy === 0 ? 'h' + f.number(dx)
+                        //     : 'l' + f.pair(dx, dy));
                     }
                 } else {
                     // c = relative curveto:
-                    parts.push('c' + f.pair(outX - prevX, outY - prevY)
-                             + ' ' + f.pair( inX - prevX,  inY - prevY)
-                             + ' ' + f.pair(curX - prevX, curY - prevY));
+                    parts.push([ 3, outX, outY, inX, inY, curX, curY ]);
+                    // // c = relative curveto:
+                    // parts.push('c' + f.pair(outX - prevX, outY - prevY)
+                    //          + ' ' + f.pair( inX - prevX,  inY - prevY)
+                    //          + ' ' + f.pair(curX - prevX, curY - prevY));
                 }
             }
             prevX = curX;
@@ -354,9 +358,10 @@ var Path = PathItem.extend(/** @lends Path# */{
         // Close path by drawing first segment again
         if (this._closed && length > 0) {
             addSegment(segments[0], true);
-            parts.push('z');
+            // parts.push('z');
+            parts.push([ 7 ]);
         }
-        return parts.join('');
+        return parts;
     },
 
     // TODO: Consider adding getSubPath(a, b), returning a part of the current
